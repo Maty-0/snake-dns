@@ -3,7 +3,7 @@ from database import db
 import socket
 import struct
 
-def handler(data):
+def handler(data, server_socket, address):
     transaction_id,flags,qdcount,ancount,nscount,arcount,qr,opcode,aa,tc,rd,ra,z,rcode,question_data,qtype,qclass,question_asked = splicer.splice(data)
     
     if qr or tc: 
@@ -16,9 +16,9 @@ def handler(data):
 
     search = db.db_lookup(question_data)
     if search:
-        return sendTo_client(transaction_id, rd, z, search,question_asked, question_data)
+        return sendTo_client(transaction_id, rd, z, search,question_asked, question_data, server_socket, address)
 
-def sendTo_client(transaction_id, rd, z, question_data, request, og_question):
+def sendTo_client(transaction_id, rd, z, question_data, request, og_question, server_socket, address):
     qr = 1 #its a response
     opcode = 0x000
     aa = 0
@@ -60,4 +60,5 @@ def sendTo_client(transaction_id, rd, z, question_data, request, og_question):
     response_body = request + answer_data
 
     response = response_header + response_body
-    return(response)
+    if response != None:
+        server_socket.sendto(response, address)

@@ -52,10 +52,3 @@ def splice(data):
         qclass,
         question_asked
     )
-
-    
-
-
-
-  
-

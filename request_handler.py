@@ -16,9 +16,9 @@ def handler(data):
 
     search = db.db_lookup(question_data)
     if search:
-        return sendTo_client(transaction_id, rd, z, search,question_asked)
+        return sendTo_client(transaction_id, rd, z, search,question_asked, question_data)
 
-def sendTo_client(transaction_id, rd, z, question_data, request):
+def sendTo_client(transaction_id, rd, z, question_data, request, og_question):
     qr = 1 #its a response
     opcode = 0x000
     aa = 0
@@ -39,7 +39,19 @@ def sendTo_client(transaction_id, rd, z, question_data, request):
 
     question_data = question_data[0]
     print(question_data)
-    addr_data = socket.inet_aton(question_data) #ipv4 to bytes
+
+    
+    if (og_question.endswith('in-addr.arpa')): #only needed for reverse search
+        parts = question_data.split('.')
+        addr_data = b''
+
+        for part in parts:
+            length_byte = bytes([len(part)])
+            addr_data += length_byte + part.encode('utf-8')
+        addr_data += b'\x00'
+    else:
+        addr_data = socket.inet_aton(question_data) #ipv4 to bytes
+
     answer_data = b'\xc0\x0c'  # Name Pointer (compression), static from what I can see?
     answer_data += struct.pack('!HHIH', 0x0001, 0x0001, ttl, len(addr_data)) 
     answer_data += addr_data

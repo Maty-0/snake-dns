@@ -1,4 +1,5 @@
 import struct
+from .models import dns_query
 
 def splice(data):
 
@@ -31,24 +32,10 @@ def splice(data):
     question_data = question_data.rstrip(b".")
     qtype, qclass = struct.unpack('!HH', data[current_index + 1 : current_index + 5]) #this val floats depending on how long the request is
 
+    query_data = dns_query(transaction_id,qdcount,ancount,nscount,arcount,qr,opcode,aa,tc,rd,ra,z,rcode, question_data.decode("utf-8"),qtype,qclass)
+    print (query_data.question_data)
     #print(transaction_id,flags,qdcount,ancount,nscount,arcount,qr,opcode,aa,tc,rd,ra,z,rcode,question_data,qtype,qclass)
     return (
-        transaction_id,
-        flags,
-        qdcount,
-        ancount,
-        nscount,
-        arcount,
-        qr,
-        opcode,
-        aa,
-        tc,
-        rd,
-        ra,
-        z,
-        rcode,
-        question_data.decode("utf-8"),
-        qtype,
-        qclass,
+        query_data,
         question_asked
     )

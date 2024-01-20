@@ -20,27 +20,16 @@ class dns_query:
         self.qtype = qtype
         self.qclass = qclass
 
-class dns_answerClient:
-    def __init__(self,transaction_id,qr,opcode,aa,tc,rd,ra,z,rcode,question_data):
-        self.transaction_id  = transaction_id
+    def generate_answerClient(self):
         self.qdcount = 0x0001 #one question
         self.ancount = 0x0001 #one answer 
         self.nscount = 0x0000
         self.arcount = 0x0000
-        self.qr = qr
-        self.opcode = opcode
-        self.aa = aa
-        self.tc = tc
-        self.rd = rd
-        self.ra = ra
-        self.z = z
-        self.rcode = rcode
-        self.question_data = question_data
         self.qtype = 0x0001 #ipv4
         self.qclass = 0x0001 #using the internet
-        self.ttl = 600 #for now hardcoded, this should be in the database
-    
-    def generate_awnser(self, question_asked, db_search):
+        self.ttl = 600 #for now hardcoded, this should be 
+
+    def generate_answer(self, question_asked, db_search):
         flags = (self.qr << 15) | (self.opcode << 11) | (self.aa << 10) | (self.tc << 9) | (self.rd << 8) | (self.ra << 7) | (self.z << 4) | self.rcode
         
         if (self.question_data.endswith('in-addr.arpa')): #only needed for reverse search
@@ -63,3 +52,4 @@ class dns_answerClient:
 
         response = response_header + response_body
         return response
+    

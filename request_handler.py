@@ -1,8 +1,5 @@
 from utils import splicer
 from database import db
-import socket
-import struct
-from utils.models import dns_query
 from utils.transport import sendTo_client
 
 def handler(data, server_socket, address):
